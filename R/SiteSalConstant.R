@@ -3,7 +3,7 @@
 #' @description
 #' Site name, distance from S-79 and salinity model constants for sites within the Caloosahatchee Estuary. For more detail see Qiu and Wan (2013).
 #'
-#' @usage data(cal_metero)
+#' @usage data(SiteSalConstant)
 #'
 #' @docType data
 #' @keywords dataset

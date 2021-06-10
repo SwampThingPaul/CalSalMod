@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 
 # CalSalMod <img src="man/figures/CalSalMod_hex.png" align="right" alt="" width="120" />
 
-<!--[![DOI](https://zenodo.org/badge/349568854.svg)](https://zenodo.org/badge/latestdoi/349568854)-->
+[![DOI](https://zenodo.org/badge/375684422.svg)](https://zenodo.org/badge/latestdoi/375684422)
 
 ## Table of Contents
 

@@ -75,9 +75,9 @@
   <div class="contents col-md-9">
 <div id="calsalmod-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#calsalmod-" class="anchor"></a>CalSalMod <!--<img src="man/figures/lakeO.png" align="right" alt="" width="120" />-->
+<a href="#calsalmod-" class="anchor"></a>CalSalMod <img src="reference/figures/CalSalMod_hex.png" align="right" alt="" width="120">
 </h1></div>
-<!--[![DOI](https://zenodo.org/badge/349568854.svg)](https://zenodo.org/badge/latestdoi/349568854)-->
+
 <div id="table-of-contents" class="section level2">
 <h2 class="hasAnchor">
 <a href="#table-of-contents" class="anchor"></a>Table of Contents</h2>
@@ -97,28 +97,81 @@
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>salinity <span class="cf">in</span> the Caloosahatchee River Estuary. Water Resources </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>Research <span class="dv">49</span><span class="sc">:</span>5804–<span class="fl">5816.</span> doi<span class="sc">:</span> <span class="fl">10.1002</span><span class="sc">/</span>wrcr<span class="fl">.20415</span></span></code></pre></div>
 <hr>
+<p>Here is an example of the work flow using this package</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/swampthingpaul/AnalystHelper">AnalystHelper</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org">lubridate</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SwampThingPaul/LORECOVER">LORECOVER</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://zoo.R-Forge.R-project.org/">zoo</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape">reshape2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SwampThingPaul/CalSalMod">CalSalMod</a></span><span class="op">)</span>
 
 <span class="co"># Data from SFWMD</span>
-<span class="va">dat</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/AnalystHelper/man/DBHYDRO_daily.html">DBHYDRO_daily</a></span><span class="op">(</span><span class="fu">date.fun</span><span class="op">(</span><span class="st">"2016-01-01"</span><span class="op">)</span>,<span class="fu">date.fun</span><span class="op">(</span><span class="st">"2021-12-31"</span><span class="op">)</span>,<span class="fl">15611</span><span class="op">)</span>
-<span class="va">dat</span><span class="op">$</span><span class="va">CY</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">Date</span>,<span class="st">"%Y"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="va">dates</span><span class="op">=</span><span class="fu">date.fun</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2020-05-01"</span>,<span class="st">"2021-04-30"</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># Rainfall and ET</span>
+<span class="va">RF.PET.DBKEY</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>SITE<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S78W"</span>,<span class="st">"S79_R"</span><span class="op">)</span>,DBKEY<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"UA637"</span>,<span class="st">"16414"</span><span class="op">)</span>,param<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ETPI"</span>,<span class="st">"RF"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">wx.dat</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/AnalystHelper/man/DBHYDRO_daily.html">DBHYDRO_daily</a></span><span class="op">(</span><span class="va">dates</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,<span class="va">dates</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,<span class="va">RF.PET.DBKEY</span><span class="op">$</span><span class="va">DBKEY</span><span class="op">)</span>
+<span class="va">wx.dat</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="va">wx.dat</span>,<span class="va">RF.PET.DBKEY</span>,<span class="st">"DBKEY"</span><span class="op">)</span>
+
+<span class="va">wx.dat.xtab</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/cast.html">dcast</a></span><span class="op">(</span><span class="va">wx.dat</span>,<span class="va">Date</span><span class="op">~</span><span class="va">param</span>,value.var<span class="op">=</span><span class="st">"Data.Value"</span>,<span class="va">mean</span><span class="op">)</span>
+<span class="va">wx.dat.xtab</span><span class="op">$</span><span class="va">RF</span><span class="op">[</span><span class="va">wx.dat.xtab</span><span class="op">$</span><span class="va">RF</span><span class="op">&lt;</span><span class="fl">0</span><span class="op">]</span><span class="op">=</span><span class="cn">NA</span>; <span class="co"># remove negative values</span>
+<span class="va">wx.dat.xtab</span><span class="op">$</span><span class="va">ETPI</span><span class="op">[</span><span class="va">wx.dat.xtab</span><span class="op">$</span><span class="va">ETPI</span><span class="op">&lt;</span><span class="fl">0</span><span class="op">]</span><span class="op">=</span><span class="cn">NA</span>; <span class="co"># remove negative values</span>
+<span class="va">wx.dat.xtab</span><span class="op">$</span><span class="va">RF_2d</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">wx.dat.xtab</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="fu"><a href="https://rdrr.io/pkg/zoo/man/rollapply.html">rollapply</a></span><span class="op">(</span><span class="va">RF</span>,width<span class="op">=</span><span class="fl">2</span>,<span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span>,na.rm<span class="op">=</span><span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">wx.dat.xtab</span><span class="op">$</span><span class="va">RF_2d</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">=</span><span class="va">wx.dat.xtab</span><span class="op">$</span><span class="va">RF</span>; <span class="co"># replaces first value with 0</span>
+
+<span class="va">wx.dat.xtab</span><span class="op">$</span><span class="va">Q.tidebasin</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">wx.dat.xtab</span>,<span class="fu"><a href="reference/cost_Q.html">cost_Q</a></span><span class="op">(</span><span class="va">RF_2d</span>,<span class="va">ETPI</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">S79Q</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/AnalystHelper/man/DBHYDRO_daily.html">DBHYDRO_daily</a></span><span class="op">(</span><span class="va">dates</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,<span class="va">dates</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,<span class="st">"00865"</span><span class="op">)</span>
+
+<span class="va">allQ.dat</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="va">wx.dat.xtab</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Date"</span>,<span class="st">"Q.tidebasin"</span><span class="op">)</span><span class="op">]</span>,<span class="va">S79Q</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Date"</span>,<span class="st">"Data.Value"</span><span class="op">)</span><span class="op">]</span>,<span class="st">"Date"</span><span class="op">)</span>
+<span class="va">allQ.dat</span><span class="op">$</span><span class="va">Q.total</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="va">allQ.dat</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Q.tidebasin"</span>,<span class="st">"Data.Value"</span><span class="op">)</span><span class="op">]</span>,na.rm<span class="op">=</span><span class="cn">T</span><span class="op">)</span>
+
+<span class="co"># Modelled salinity at Fort Myers</span>
+<span class="va">allQ.dat</span><span class="op">$</span><span class="va">mod.sal</span><span class="op">=</span><span class="fu"><a href="reference/SalMod.html">SalMod</a></span><span class="op">(</span>Q.total<span class="op">=</span><span class="va">allQ.dat</span><span class="op">$</span><span class="va">Q.total</span>,SITE<span class="op">=</span><span class="st">"FtMyers"</span><span class="op">)</span>
+
+<span class="co"># Measured Salinity</span>
+<span class="va">params</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>param<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SPC"</span>,<span class="st">"WT"</span><span class="op">)</span>,DBKEY<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">88289</span>,<span class="fl">88285</span><span class="op">)</span><span class="op">)</span>
+<span class="va">sal.dat</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/AnalystHelper/man/DBHYDRO_daily.html">DBHYDRO_daily</a></span><span class="op">(</span><span class="va">dates</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,<span class="va">dates</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,<span class="va">params</span><span class="op">$</span><span class="va">DBKEY</span><span class="op">)</span>
+<span class="va">sal.dat</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="va">sal.dat</span>,<span class="va">params</span>,<span class="st">"DBKEY"</span><span class="op">)</span>
+
+<span class="va">sal.dat.xtab</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/cast.html">dcast</a></span><span class="op">(</span><span class="va">sal.dat</span>,<span class="va">Date</span><span class="op">~</span><span class="va">param</span>,value.var<span class="op">=</span><span class="st">"Data.Value"</span>,<span class="va">mean</span><span class="op">)</span>
+<span class="va">sal.dat.xtab</span><span class="op">$</span><span class="va">WT</span><span class="op">[</span><span class="va">sal.dat.xtab</span><span class="op">$</span><span class="va">WT</span><span class="op">&lt;</span><span class="fl">0</span><span class="op">]</span><span class="op">=</span><span class="cn">NA</span>
+<span class="va">sal.dat.xtab</span><span class="op">$</span><span class="va">sal</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">sal.dat.xtab</span>,<span class="fu"><a href="https://rdrr.io/pkg/AnalystHelper/man/SalinityCalc.html">SalinityCalc</a></span><span class="op">(</span><span class="va">SPC</span>,<span class="va">WT</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mod.sal</span><span class="op">~</span><span class="va">Date</span>,<span class="va">allQ.dat</span>,type<span class="op">=</span><span class="st">"b"</span>,las<span class="op">=</span><span class="fl">1</span>,ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">30</span><span class="op">)</span>,ylab<span class="op">=</span><span class="st">"Salinity"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">sal.dat.xtab</span>,<span class="fu"><a href="https://rdrr.io/r/graphics/points.html">points</a></span><span class="op">(</span><span class="va">Date</span>,<span class="va">sal</span>,pch<span class="op">=</span><span class="fl">21</span>,bg<span class="op">=</span><span class="st">"red"</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span><span class="op">(</span>side<span class="op">=</span><span class="fl">3</span>,adj<span class="op">=</span><span class="fl">0</span>,<span class="st">"Site: Ft Myers"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>,legend<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Modelled"</span>,<span class="st">"Observed"</span><span class="op">)</span>,
+       pch<span class="op">=</span><span class="fl">21</span>,pt.bg<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="st">"red"</span><span class="op">)</span>,ncol<span class="op">=</span><span class="fl">1</span>,cex<span class="op">=</span><span class="fl">0.8</span>,bty<span class="op">=</span><span class="st">"n"</span>,y.intersp<span class="op">=</span><span class="fl">1</span>,x.intersp<span class="op">=</span><span class="fl">0.5</span>,xpd<span class="op">=</span><span class="cn">NA</span>,xjust<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></code></pre></div>
+<p><img src="reference/figures/README-SalExample-1.png" alt="Modeled and Observed Salinity at the Fort Myers Station."></p>
 </div>
 <div id="citing-package-" class="section level2">
 <h2 class="hasAnchor">
 <a href="#citing-package-" class="anchor"></a>Citing package <a name="cite"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/citation.html">citation</a></span><span class="op">(</span><span class="st">'CalSalMod'</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/citation.html">citation</a></span><span class="op">(</span><span class="st">'CalSalMod'</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; To cite package 'CalSalMod' in publications use:</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;   Paul Julian (2021). CalSalMod: Caloosahatchee Estuary Salinity Model.</span>
+<span class="co">#&gt;   R package version 0.1.0. https://github.com/SwampThingPaul/CalSalMod</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; A BibTeX entry for LaTeX users is</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;   @Manual{,</span>
+<span class="co">#&gt;     title = {CalSalMod: Caloosahatchee Estuary Salinity Model},</span>
+<span class="co">#&gt;     author = {Paul Julian},</span>
+<span class="co">#&gt;     year = {2021},</span>
+<span class="co">#&gt;     note = {R package version 0.1.0},</span>
+<span class="co">#&gt;     url = {https://github.com/SwampThingPaul/CalSalMod},</span>
+<span class="co">#&gt;   }</span></code></pre></div>
 </div>
 <div id="installation-" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation-" class="anchor"></a>Installation <a name="install"></a>
 </h2>
 <p>Development version can be installed from this repo.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>;<span class="co"># if you do not have it installed on your PC</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"SwampThingPaul/CalSalMod"</span><span class="op">)</span></code></pre></div>
 <p>At this time, this package is still under-development and not available on CRAN.</p>
@@ -152,7 +205,13 @@
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://zenodo.org/badge/latestdoi/375684422"><img src="https://zenodo.org/badge/375684422.svg" alt="DOI"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
