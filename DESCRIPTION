@@ -1,0 +1,22 @@
+Package: CalSalMod
+Type: Package
+Title: Caloosahatchee Estuary Salinity Model
+Version: 0.1.0
+Date: 2021-06-10
+Authors@R: c(person("Paul", "Julian", role = c("aut", "cre"), 
+    email = "pjulian@sccf.org", comment = c(ORCID = "0000-0002-7617-1354")))
+Maintainer: Paul Julian <pjulian@sccf.org>
+URL: https://github.com/SwampThingPaul/CalSalMod
+BugReports: https://github.com/SwampThingPaul/CalSalMod/issues
+Description: Caloosahatchee estuary salinity model presented by Qiu and Wan 
+  (2013) used to predict daily salinity values based on freshwater inputs at 
+  several monitoring locations within the estuary. For more information see 
+  Qiu and Wan (2013) Time series modeling and prediction of salinity in the 
+  Caloosahatchee River Estuary. Water Resources Research 49:5804–5816. 
+License: MIT + file LICENSE
+Depends: R (>= 3.0)
+Imports: zoo
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Roxygen: list(markdown = TRUE)
